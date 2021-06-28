@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -18,9 +19,9 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         GridPane board = new GridPane();
-        drawBoard(board);
-
         Scene scene = new Scene(board, 794, 791);
+
+        drawBoard(board);
 
         stage.setTitle("Wolf and Sheep Game");
         stage.setScene(scene);
@@ -30,23 +31,7 @@ public class Main extends Application {
     private void drawBoard(GridPane board) {
         for (int col = 0; col < SIZE_OF_BOARD; col++) {
             for (int row = 0; row < SIZE_OF_BOARD; row++) {
-                StackPane stackPane = new StackPane();
-
-                BoardField field;
-                if ((col + row) % 2 == 0) {
-                    field = new BoardField(Color.ORANGE);
-                    stackPane.getChildren().addAll(field);
-                } else {
-                    field = new BoardField(Color.BLACK);
-                    stackPane.getChildren().addAll(field);
-                    if (row == 0) {
-                        Circle pawn = new Circle(35);
-                        pawn.setFill(Color.DARKGREEN);
-                        stackPane.getChildren().addAll(pawn);
-                    }
-                }
-
-                board.add(stackPane, col, row);
+                board.add(BoardField.getFieldPane(col,row), col, row);
             }
         }
 
