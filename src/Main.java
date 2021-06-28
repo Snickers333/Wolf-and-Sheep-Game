@@ -19,7 +19,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         GridPane board = new GridPane();
-        Scene scene = new Scene(board, 794, 791);
+        Scene scene = new Scene(board, 800, 800);
 
         drawBoard(board);
 

@@ -17,26 +17,32 @@ public class BoardField extends Region {
         setBackground(background);
     }
 
-
     public static StackPane getFieldPane(int col, int row) {
         StackPane stackPane = new StackPane();
 
-        BoardField field;
+        BoardField fieldOrange = new BoardField(Color.ORANGE);
+        BoardField fieldBlack = new BoardField(Color.BLACK);
+
+        Pawn pawn = new Pawn(fieldBlack, Color.DARKGREEN);
+        pawn.setOnMouseClicked(mouseEvent -> {
+            stackPane.getChildren().remove(pawn);
+        });
+
+        fieldBlack.setOnMouseClicked(mouseEvent -> {
+            if (!stackPane.getChildren().contains(pawn)){
+                stackPane.getChildren().add(pawn);
+            }
+        });
+
         if ((col + row) % 2 == 0) {
-            field = new BoardField(Color.ORANGE);
-            stackPane.getChildren().addAll(field);
+            stackPane.getChildren().add(fieldOrange);
         } else {
-            field = new BoardField(Color.BLACK);
-            stackPane.getChildren().addAll(field);
+            stackPane.getChildren().add(fieldBlack);
             if (row == 0) {
-                Circle pawn = new Circle();
-                pawn.setFill(Color.DARKGREEN);
-                pawn.radiusProperty().bind(
-                        Bindings.when(field.heightProperty().lessThan(field.widthProperty())).then(field.heightProperty().subtract(10).divide(2)).otherwise(field.widthProperty().subtract(10).divide(2))
-                );
-                stackPane.getChildren().addAll(pawn);
+                stackPane.getChildren().add(pawn);
             }
         }
+
         return stackPane;
     }
 }
