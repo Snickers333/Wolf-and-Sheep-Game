@@ -31,7 +31,8 @@ public class Main extends Application {
         drawBoard(board);
 
         Pawn wolf = Pawn.getWolf(pawns);
-        makeRulesActive(stackPanes, pawns, wolf);
+
+        makeSurroundingFieldsActive(stackPanes,wolf);
 
 
         stage.setTitle("Wolf and Sheep Game");
@@ -61,11 +62,9 @@ public class Main extends Application {
         }
     }
 
-    private static void makeRulesActive (StackPane[][] stackPanes, List<Pawn> pawns, Pawn wolf) {
-        makeSurroundingFieldsActive(stackPanes,wolf,wolf.getColumn(),wolf.getRow());
-    }
-
-    private static void makeSurroundingFieldsActive(StackPane[][] stackPanes, Pawn wolf, int col, int row) {
+    private static void makeSurroundingFieldsActive(StackPane[][] stackPanes, Pawn wolf) {
+        int col = wolf.getColumn();
+        int row = wolf.getRow();
         stackPanes[col-1][row-1].setOnMouseEntered(mouseEvent -> {
             BoardField field = (BoardField) stackPanes[col-1][row-1].getChildren().get(0);
             field.lighten();
@@ -168,22 +167,22 @@ public class Main extends Application {
             case 1 ->{
                 wolf.setColumn(col-1);
                 wolf.setRow(row-1);
-                makeSurroundingFieldsActive(stackPanes, wolf, col-1, row-1);
+                makeSurroundingFieldsActive(stackPanes, wolf);
             }
             case 2 ->{
                 wolf.setColumn(col+1);
                 wolf.setRow(row-1);
-                makeSurroundingFieldsActive(stackPanes, wolf, col+1, row-1);
+                makeSurroundingFieldsActive(stackPanes, wolf);
             }
             case 3 ->{
                 wolf.setColumn(col+1);
                 wolf.setRow(row+1);
-                makeSurroundingFieldsActive(stackPanes, wolf, col+1, row+1);
+                makeSurroundingFieldsActive(stackPanes, wolf);
             }
             case 4 ->{
                 wolf.setColumn(col-1);
                 wolf.setRow(row+1);
-                makeSurroundingFieldsActive(stackPanes, wolf, col-1, row+1);
+                makeSurroundingFieldsActive(stackPanes, wolf);
             }
         }
     }
