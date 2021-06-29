@@ -56,52 +56,69 @@ public class Main extends Application {
     }
 
     private static void makeRulesActive (StackPane[][] stackPanes, List<Pawn> pawns) {
-        Pawn wolf = null;
-        for (Pawn pawn : pawns) {
-            if (!pawn.isSheep()) {
-                wolf = pawn;
-            }
-        }
-        pawns.remove(wolf);
 
-        Pawn finalWolf = wolf;
+        Pawn wolf = Pawn.getWolf(pawns);
+
         stackPanes[wolf.getColumn()-1][wolf.getRow()-1].setOnMouseEntered(mouseEvent -> {
-            BoardField field = (BoardField) stackPanes[finalWolf.getColumn()-1][finalWolf.getRow()-1].getChildren().get(0);
+            BoardField field = (BoardField) stackPanes[wolf.getColumn()-1][wolf.getRow()-1].getChildren().get(0);
             field.lighten();
         });
 
+        stackPanes[wolf.getColumn()-1][wolf.getRow()-1].setOnMouseClicked(mouseEvent -> {
+            stackPanes[wolf.getColumn()][wolf.getRow()].getChildren().remove(wolf);
+            stackPanes[wolf.getColumn()-1][wolf.getRow()-1].getChildren().add(wolf);
+            Pawn pawn = (Pawn) stackPanes[wolf.getColumn()-1][wolf.getRow()-1].getChildren().get(1);
+            pawn.setColumn(wolf.getColumn()-1);
+            pawn.setRow(wolf.getRow()-1);
+        });
+
         stackPanes[wolf.getColumn()-1][wolf.getRow()-1].setOnMouseExited(mouseEvent -> {
-            BoardField field = (BoardField) stackPanes[finalWolf.getColumn()-1][finalWolf.getRow()-1].getChildren().get(0);
+            BoardField field = (BoardField) stackPanes[wolf.getColumn()-1][wolf.getRow()-1].getChildren().get(0);
             field.darken();
         });
 
         stackPanes[wolf.getColumn()+1][wolf.getRow()-1].setOnMouseEntered(mouseEvent -> {
-            BoardField field = (BoardField) stackPanes[finalWolf.getColumn()+1][finalWolf.getRow()-1].getChildren().get(0);
+            BoardField field = (BoardField) stackPanes[wolf.getColumn()+1][wolf.getRow()-1].getChildren().get(0);
             field.lighten();
         });
 
+        stackPanes[wolf.getColumn()+1][wolf.getRow()-1].setOnMouseClicked(mouseEvent -> {
+            stackPanes[wolf.getColumn()][wolf.getRow()].getChildren().remove(wolf);
+            stackPanes[wolf.getColumn()+1][wolf.getRow()-1].getChildren().add(wolf);
+        });
+
         stackPanes[wolf.getColumn()+1][wolf.getRow()-1].setOnMouseExited(mouseEvent -> {
-            BoardField field = (BoardField) stackPanes[finalWolf.getColumn()+1][finalWolf.getRow()-1].getChildren().get(0);
+            BoardField field = (BoardField) stackPanes[wolf.getColumn()+1][wolf.getRow()-1].getChildren().get(0);
             field.darken();
         });
 
         stackPanes[wolf.getColumn()+1][wolf.getRow()+1].setOnMouseEntered(mouseEvent -> {
-            BoardField field = (BoardField) stackPanes[finalWolf.getColumn()+1][finalWolf.getRow()+1].getChildren().get(0);
+            BoardField field = (BoardField) stackPanes[wolf.getColumn()+1][wolf.getRow()+1].getChildren().get(0);
             field.lighten();
         });
 
+        stackPanes[wolf.getColumn()+1][wolf.getRow()+1].setOnMouseClicked(mouseEvent -> {
+            stackPanes[wolf.getColumn()][wolf.getRow()].getChildren().remove(wolf);
+            stackPanes[wolf.getColumn()+1][wolf.getRow()+1].getChildren().add(wolf);
+        });
+
         stackPanes[wolf.getColumn()+1][wolf.getRow()+1].setOnMouseExited(mouseEvent -> {
-            BoardField field = (BoardField) stackPanes[finalWolf.getColumn()+1][finalWolf.getRow()+1].getChildren().get(0);
+            BoardField field = (BoardField) stackPanes[wolf.getColumn()+1][wolf.getRow()+1].getChildren().get(0);
             field.darken();
         });
 
         stackPanes[wolf.getColumn()-1][wolf.getRow()+1].setOnMouseEntered(mouseEvent -> {
-            BoardField field = (BoardField) stackPanes[finalWolf.getColumn()-1][finalWolf.getRow()+1].getChildren().get(0);
+            BoardField field = (BoardField) stackPanes[wolf.getColumn()-1][wolf.getRow()+1].getChildren().get(0);
             field.lighten();
         });
 
+        stackPanes[wolf.getColumn()-1][wolf.getRow()+1].setOnMouseClicked(mouseEvent -> {
+            stackPanes[wolf.getColumn()][wolf.getRow()].getChildren().remove(wolf);
+            stackPanes[wolf.getColumn()-1][wolf.getRow()+1].getChildren().add(wolf);
+        });
+
         stackPanes[wolf.getColumn()-1][wolf.getRow()+1].setOnMouseExited(mouseEvent -> {
-            BoardField field = (BoardField) stackPanes[finalWolf.getColumn()-1][finalWolf.getRow()+1].getChildren().get(0);
+            BoardField field = (BoardField) stackPanes[wolf.getColumn()-1][wolf.getRow()+1].getChildren().get(0);
             field.darken();
         });
     }
