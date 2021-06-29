@@ -31,7 +31,6 @@ public class Pawn extends Circle {
                 wolf = pawn;
             }
         }
-        pawns.remove(wolf);
         return wolf;
     }
 

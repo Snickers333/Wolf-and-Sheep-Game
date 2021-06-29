@@ -4,6 +4,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -26,9 +27,8 @@ public class Main extends Application {
 
         drawBoard(board);
 
-        Pawn wolf = Pawn.getWolf(pawns);
+        makeSurroundingFieldsActive(stackPanes, pawns);
 
-        makeSurroundingFieldsActive(stackPanes, wolf, wolfTurn);
 
 
         stage.setTitle("Wolf and Sheep Game");
@@ -58,67 +58,82 @@ public class Main extends Application {
         }
     }
 
-    private static void makeSurroundingFieldsActive(StackPane[][] stackPanes, Pawn pawn, boolean wolfTurn) {
-        if (wolfTurn && !pawn.isSheep()){
+    private static void makeSurroundingFieldsActive(StackPane[][] stackPanes, List<Pawn> pawns) {
+        if (wolfTurn){
+            Pawn pawn = Pawn.getWolf(pawns);
             int col = pawn.getColumn();
             int row = pawn.getRow();
             if (!(col == 0)) {
                 if (!(row == 0)) {
                     BoardField.lighten(col - 1, row - 1, stackPanes);
-                    movePawnOnMouseClick(stackPanes, pawn, col, row, 1);
+                    movePawnOnMouseClick(stackPanes, pawn, pawns,col, row, 1);
                     BoardField.darken(stackPanes, col - 1, row - 1);
                 }
                 if (!(row == (SIZE_OF_BOARD - 1))) {
                     BoardField.lighten(col - 1, row + 1, stackPanes);
-                    movePawnOnMouseClick(stackPanes, pawn, col, row, 4);
+                    movePawnOnMouseClick(stackPanes, pawn, pawns,col, row, 4);
                     BoardField.darken(stackPanes, col - 1, row + 1);
                 }
             }
-
             if (!(col == (SIZE_OF_BOARD - 1))) {
                 if (!(row == 0)) {
                     BoardField.lighten(col + 1, row - 1, stackPanes);
-                    movePawnOnMouseClick(stackPanes, pawn, col, row, 2);
+                    movePawnOnMouseClick(stackPanes, pawn, pawns,col, row, 2);
                     BoardField.darken(stackPanes, col + 1, row - 1);
                 }
                 if (!(row == (SIZE_OF_BOARD - 1))) {
                     BoardField.lighten(col + 1, row + 1, stackPanes);
-                    movePawnOnMouseClick(stackPanes, pawn, col, row, 3);
+                    movePawnOnMouseClick(stackPanes, pawn, pawns,col, row, 3);
                     BoardField.darken(stackPanes, col + 1, row + 1);
+                }
+            }
+            wolfTurn = false;
+        } else {
+            for (Pawn pawn : pawns) {
+                if (pawn.isSheep()){
+                    BoardField.lighten(pawn.getColumn(), pawn.getRow(), stackPanes);
+                    BoardField.darken(stackPanes, pawn.getColumn(), pawn.getRow());
+                    stackPanes[pawn.getColumn()][pawn.getRow()].setOnMouseClicked(mouseEvent -> {
+                        MakeFieldsActiveForSheep(stackPanes, pawn, pawns);
+                    });
                 }
             }
         }
     }
 
-    private static void movePawnOnMouseClick(StackPane[][] stackPanes, Pawn wolf, int col, int row, int clicked) {
-        switch (clicked) {
-            case 1 -> stackPanes[col - 1][row - 1].setOnMouseClicked(mouseEvent -> {
-                stackPanes[col][row].getChildren().remove(wolf);
-                stackPanes[col - 1][row - 1].getChildren().add(wolf);
-                removeSurroundingFieldsActive(stackPanes, wolf, clicked);
-            });
-            case 2 -> stackPanes[col + 1][row - 1].setOnMouseClicked(mouseEvent -> {
-                stackPanes[col][row].getChildren().remove(wolf);
-                stackPanes[col + 1][row - 1].getChildren().add(wolf);
-                removeSurroundingFieldsActive(stackPanes, wolf, clicked);
-            });
-            case 3 -> stackPanes[col + 1][row + 1].setOnMouseClicked(mouseEvent -> {
-                stackPanes[col][row].getChildren().remove(wolf);
-                stackPanes[col + 1][row + 1].getChildren().add(wolf);
-                removeSurroundingFieldsActive(stackPanes, wolf, clicked);
-            });
-            case 4 -> stackPanes[col - 1][row + 1].setOnMouseClicked(mouseEvent -> {
-                stackPanes[col][row].getChildren().remove(wolf);
-                stackPanes[col - 1][row + 1].getChildren().add(wolf);
-                removeSurroundingFieldsActive(stackPanes, wolf, clicked);
-            });
+    private static void MakeFieldsActiveForSheep(StackPane[][] stackPanes, Pawn pawn, List<Pawn> pawns) {
+        for (Pawn sheep : pawns) {
+            if (sheep.isSheep()){
+                stackPanes[sheep.getColumn()][sheep.getRow()].setOnMouseEntered(mouseEvent -> {
+                });
+                stackPanes[sheep.getColumn()][sheep.getRow()].setOnMouseClicked(mouseEvent -> {
+                });
+                BoardField.darken(stackPanes, sheep.getColumn(), sheep.getRow());
+            }
         }
+        int col = pawn.getColumn();
+        int row = pawn.getRow();
+        if (!(col == 0)) {
+            if (!(row == (SIZE_OF_BOARD - 1))) {
+                BoardField.lighten(col - 1, row + 1, stackPanes);
+                movePawnOnMouseClick(stackPanes, pawn, pawns,col, row, 4);
+                BoardField.darken(stackPanes, col - 1, row + 1);
+            }
+        }
+
+        if (!(col == (SIZE_OF_BOARD - 1))) {
+            if (!(row == (SIZE_OF_BOARD - 1))) {
+                BoardField.lighten(col + 1, row + 1, stackPanes);
+                movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 3);
+                BoardField.darken(stackPanes, col + 1, row + 1);
+            }
+        }
+        wolfTurn = true;
     }
 
-
-    private static void removeSurroundingFieldsActive(StackPane[][] stackPanes, Pawn wolf, int clicked) {
-        int col = wolf.getColumn();
-        int row = wolf.getRow();
+    private static void removeSurroundingFieldsActive(StackPane[][] stackPanes, Pawn pawn, List<Pawn> pawns, int clicked) {
+        int col = pawn.getColumn();
+        int row = pawn.getRow();
         if (!(col == 0)) {
             if (!(row == (SIZE_OF_BOARD - 1))) {
                 stackPanes[col - 1][row + 1].setOnMouseEntered(mouseEvent -> {
@@ -155,25 +170,50 @@ public class Main extends Application {
 
         switch (clicked) {
             case 1 -> {
-                wolf.setColumn(col - 1);
-                wolf.setRow(row - 1);
-                makeSurroundingFieldsActive(stackPanes, wolf, wolfTurn);
+                pawn.setColumn(col - 1);
+                pawn.setRow(row - 1);
+                makeSurroundingFieldsActive(stackPanes, pawns);
             }
             case 2 -> {
-                wolf.setColumn(col + 1);
-                wolf.setRow(row - 1);
-                makeSurroundingFieldsActive(stackPanes, wolf, wolfTurn);
+                pawn.setColumn(col + 1);
+                pawn.setRow(row - 1);
+                makeSurroundingFieldsActive(stackPanes, pawns);
             }
             case 3 -> {
-                wolf.setColumn(col + 1);
-                wolf.setRow(row + 1);
-                makeSurroundingFieldsActive(stackPanes, wolf, wolfTurn);
+                pawn.setColumn(col + 1);
+                pawn.setRow(row + 1);
+                makeSurroundingFieldsActive(stackPanes, pawns);
             }
             case 4 -> {
-                wolf.setColumn(col - 1);
-                wolf.setRow(row + 1);
-                makeSurroundingFieldsActive(stackPanes, wolf, wolfTurn);
+                pawn.setColumn(col - 1);
+                pawn.setRow(row + 1);
+                makeSurroundingFieldsActive(stackPanes, pawns);
             }
+        }
+    }
+
+    private static void movePawnOnMouseClick(StackPane[][] stackPanes, Pawn pawn, List<Pawn> pawns, int col, int row, int clicked) {
+        switch (clicked) {
+            case 1 -> stackPanes[col - 1][row - 1].setOnMouseClicked(mouseEvent -> {
+                stackPanes[col][row].getChildren().remove(pawn);
+                stackPanes[col - 1][row - 1].getChildren().add(pawn);
+                removeSurroundingFieldsActive(stackPanes, pawn, pawns,clicked);
+            });
+            case 2 -> stackPanes[col + 1][row - 1].setOnMouseClicked(mouseEvent -> {
+                stackPanes[col][row].getChildren().remove(pawn);
+                stackPanes[col + 1][row - 1].getChildren().add(pawn);
+                removeSurroundingFieldsActive(stackPanes, pawn, pawns,clicked);
+            });
+            case 3 -> stackPanes[col + 1][row + 1].setOnMouseClicked(mouseEvent -> {
+                stackPanes[col][row].getChildren().remove(pawn);
+                stackPanes[col + 1][row + 1].getChildren().add(pawn);
+                removeSurroundingFieldsActive(stackPanes, pawn, pawns,clicked);
+            });
+            case 4 -> stackPanes[col - 1][row + 1].setOnMouseClicked(mouseEvent -> {
+                stackPanes[col][row].getChildren().remove(pawn);
+                stackPanes[col - 1][row + 1].getChildren().add(pawn);
+                removeSurroundingFieldsActive(stackPanes, pawn, pawns,clicked);
+            });
         }
     }
 }
