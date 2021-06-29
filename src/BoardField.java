@@ -54,7 +54,6 @@ public class BoardField extends Region {
         }
 
 
-
         return stackPane;
     }
 }
