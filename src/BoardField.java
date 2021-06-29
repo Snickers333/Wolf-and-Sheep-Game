@@ -20,12 +20,19 @@ public class BoardField extends Region {
         setBackground(background);
     }
 
-    public void lighten() {
-        setColor(Color.GREENYELLOW);
+
+    public static void lighten(int i, int i2, StackPane[][] stackPanes) {
+        stackPanes[i][i2].setOnMouseEntered(mouseEvent -> {
+            BoardField field = (BoardField) stackPanes[i][i2].getChildren().get(0);
+            field.setColor(Color.GREENYELLOW);
+        });
     }
 
-    public void darken() {
-        setColor(color);
+    public static void darken(StackPane[][] stackPanes, int i, int i2) {
+        stackPanes[i][i2].setOnMouseExited(mouseEvent -> {
+            BoardField field = (BoardField) stackPanes[i][i2].getChildren().get(0);
+            field.setColor(Color.BLACK);
+        });
     }
 
 
@@ -47,7 +54,7 @@ public class BoardField extends Region {
             }
         }
 
-        if (col == 4 && row == 3) {
+        if (col == 4 && row == 7) {
             Pawn wolf = new Pawn(fieldBlack, Color.RED, col, row);
             pawns.add(wolf);
             stackPane.getChildren().add(wolf);
