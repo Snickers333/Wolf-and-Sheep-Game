@@ -19,9 +19,6 @@ public class Pawn extends Circle {
         radiusProperty().bind(
                 Bindings.when(field.heightProperty().lessThan(field.widthProperty())).then(field.heightProperty().subtract(10).divide(2)).otherwise(field.widthProperty().subtract(10).divide(2))
         );
-//        System.out.println(isSheep);
-//        System.out.println(row);
-//        System.out.println(column);
     }
 
     public int getRow() {

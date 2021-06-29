@@ -47,18 +47,11 @@ public class BoardField extends Region {
             }
         }
 
-        if (col == 4 && row == 7) {
+        if (col == 4 && row == 5) {
             Pawn wolf = new Pawn(fieldBlack, Color.RED, col, row);
             pawns.add(wolf);
             stackPane.getChildren().add(wolf);
         }
-
-        stackPane.setOnMouseEntered(mouseEvent -> {
-            fieldBlack.lighten();
-        });
-        stackPane.setOnMouseExited(mouseEvent -> {
-            fieldBlack.darken();
-        });
 
         return stackPane;
     }

@@ -3,6 +3,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 public class Main extends Application {
     public static final int SIZE_OF_BOARD = 8;
     public List<Pawn> pawns = new ArrayList<>();
+    public StackPane[][] stackPanes = new StackPane[SIZE_OF_BOARD][SIZE_OF_BOARD];
 
     public static void main(String[] args) {
         launch(args);
@@ -23,6 +25,8 @@ public class Main extends Application {
 
         drawBoard(board);
 
+        makeRulesActive(stackPanes, pawns);
+
         stage.setTitle("Wolf and Sheep Game");
         stage.setScene(scene);
         stage.show();
@@ -31,7 +35,9 @@ public class Main extends Application {
     private void drawBoard(GridPane board) {
         for (int col = 0; col < SIZE_OF_BOARD; col++) {
             for (int row = 0; row < SIZE_OF_BOARD; row++) {
-                board.add(BoardField.getFieldPane(col, row, pawns), col, row);
+                StackPane stackPane = BoardField.getFieldPane(col, row, pawns);
+                stackPanes[col][row] = stackPane;
+                board.add(stackPane, col, row);
             }
         }
 
@@ -46,5 +52,9 @@ public class Main extends Application {
             rowConstraints.setPercentHeight(100 / (double) SIZE_OF_BOARD);
             board.getRowConstraints().add(rowConstraints);
         }
+    }
+
+    private static void makeRulesActive (StackPane[][] stackPanes, List<Pawn> pawns) {
+        System.out.println(pawns);
     }
 }
