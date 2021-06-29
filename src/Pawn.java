@@ -36,4 +36,21 @@ public class Pawn extends Circle {
     public void setColumn(int column) {
         this.column = column;
     }
+
+    public boolean isSheep() {
+        return isSheep;
+    }
+
+    public void setSheep(boolean sheep) {
+        isSheep = sheep;
+    }
+
+    @Override
+    public String toString() {
+        return "Pawn{" +
+                "isSheep=" + isSheep +
+                ", row=" + row +
+                ", column=" + column +
+                '}';
+    }
 }
