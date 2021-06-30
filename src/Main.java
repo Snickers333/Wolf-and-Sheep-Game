@@ -12,7 +12,8 @@ import java.util.List;
 
 public class Main extends Application {
     private static final int SIZE_OF_BOARD = 8;
-    private List<Pawn> pawns = new ArrayList<>();
+    private static List<Pawn> pawns = new ArrayList<>();
+    private static List<Pawn> grave = new ArrayList<>();
     private StackPane[][] stackPanes = new StackPane[SIZE_OF_BOARD][SIZE_OF_BOARD];
     private static boolean wolfTurn = true;
 
@@ -25,15 +26,17 @@ public class Main extends Application {
         GridPane board = new GridPane();
         Scene scene = new Scene(board, 800, 800);
         // TODO SET BOARD SIZE
+        // TODO COLLISION
+        // TODO SHOW WIN LOSE MESSAGES
         drawBoard(board);
-        setWolf();
+        initializeWolf();
 
         stage.setTitle("Wolf and Sheep Game");
         stage.setScene(scene);
         stage.show();
     }
 
-    private void setWolf() {
+    private void initializeWolf() {
         for (int col = 0; col < stackPanes.length; col++){
             for (int row = 0; row < stackPanes[col].length; row++){
                 if ((col % 2 == 0) && row == SIZE_OF_BOARD - 1){
@@ -97,24 +100,25 @@ public class Main extends Application {
             int col = pawn.getColumn();
             int row = pawn.getRow();
             if (!(col == 0)) {
-                if (!(row == 0)) {
+                if (!(row == 0) && isPawnThere(col - 1, row - 1)) {
                     BoardField.lighten(col - 1, row - 1, stackPanes);
                     movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 1);
                     BoardField.darken(stackPanes, col - 1, row - 1);
+
                 }
-                if (!(row == (SIZE_OF_BOARD - 1))) {
+                if (!(row == (SIZE_OF_BOARD - 1)) && isPawnThere(col - 1, row + 1)) {
                     BoardField.lighten(col - 1, row + 1, stackPanes);
                     movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 4);
                     BoardField.darken(stackPanes, col - 1, row + 1);
                 }
             }
             if (!(col == (SIZE_OF_BOARD - 1))) {
-                if (!(row == 0)) {
+                if (!(row == 0) && isPawnThere(col + 1, row - 1)) {
                     BoardField.lighten(col + 1, row - 1, stackPanes);
                     movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 2);
                     BoardField.darken(stackPanes, col + 1, row - 1);
                 }
-                if (!(row == (SIZE_OF_BOARD - 1))) {
+                if (!(row == (SIZE_OF_BOARD - 1)) && isPawnThere(col + 1, row + 1)) {
                     BoardField.lighten(col + 1, row + 1, stackPanes);
                     movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 3);
                     BoardField.darken(stackPanes, col + 1, row + 1);
@@ -148,7 +152,7 @@ public class Main extends Application {
         int col = pawn.getColumn();
         int row = pawn.getRow();
         if (!(col == 0)) {
-            if (!(row == (SIZE_OF_BOARD - 1))) {
+            if (!(row == (SIZE_OF_BOARD - 1)) && isPawnThere(col - 1, row + 1)) {
                 BoardField.lighten(col - 1, row + 1, stackPanes);
                 movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 4);
                 BoardField.darken(stackPanes, col - 1, row + 1);
@@ -156,7 +160,7 @@ public class Main extends Application {
         }
 
         if (!(col == (SIZE_OF_BOARD - 1))) {
-            if (!(row == (SIZE_OF_BOARD - 1))) {
+            if (!(row == (SIZE_OF_BOARD - 1)) && isPawnThere(col + 1, row + 1)) {
                 BoardField.lighten(col + 1, row + 1, stackPanes);
                 movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 3);
                 BoardField.darken(stackPanes, col + 1, row + 1);
@@ -258,9 +262,26 @@ public class Main extends Application {
     }
 
     private static void checkPawnsPosition(List<Pawn> pawns) {
-        pawns.removeIf(pawn -> pawn.isSheep() && pawn.getRow() == SIZE_OF_BOARD - 1);
+        for (Pawn pawn : pawns){
+            if (pawn.isSheep() && pawn.getRow() == SIZE_OF_BOARD - 1){
+                grave.add(pawn);
+            }
+        }
+        pawns.removeAll(grave);
         if (pawns.size() == 1){
             System.out.println("Wilkor WINS");
         }
+    }
+
+    private static boolean isPawnThere (int col, int row) {
+        for (Pawn pawn : pawns) {
+            if (pawn.getColumn() == col && pawn.getRow() == row)
+                return false;
+        }
+        for (Pawn pawn : grave) {
+            if (pawn.getColumn() == col && pawn.getRow() == row)
+                return false;
+        }
+        return true;
     }
 }

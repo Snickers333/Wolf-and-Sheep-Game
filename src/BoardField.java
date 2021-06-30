@@ -53,14 +53,6 @@ public class BoardField extends Region {
                 stackPane.getChildren().add(sheep);
             }
         }
-
-//        if (col == 4 && row == 7) {
-//            Pawn wolf = new Pawn(fieldBlack, Color.RED, col, row);
-//            pawns.add(wolf);
-//            stackPane.getChildren().add(wolf);
-//        }
-
-
         return stackPane;
     }
 }
