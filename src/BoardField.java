@@ -7,10 +7,8 @@ import javafx.scene.paint.Color;
 import java.util.List;
 
 public class BoardField extends Region {
-    private Color color;
 
     public BoardField(Color color) {
-        this.color = color;
         setColor(color);
     }
 

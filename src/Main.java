@@ -1,5 +1,7 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -14,7 +16,7 @@ public class Main extends Application {
     private static final int SIZE_OF_BOARD = 8;
     private static List<Pawn> pawns = new ArrayList<>();
     private static List<Pawn> grave = new ArrayList<>();
-    private StackPane[][] stackPanes = new StackPane[SIZE_OF_BOARD][SIZE_OF_BOARD];
+    private static StackPane[][] stackPanes = new StackPane[SIZE_OF_BOARD][SIZE_OF_BOARD];
     private static boolean wolfTurn = true;
 
     public static void main(String[] args) {
@@ -68,7 +70,7 @@ public class Main extends Application {
                 }
             }
         }
-        makeSurroundingFieldsActive(stackPanes, pawns);
+        makeSurroundingFieldsActive();
     }
 
     private void drawBoard(GridPane board) {
@@ -93,36 +95,44 @@ public class Main extends Application {
         }
     }
 
-    private static void makeSurroundingFieldsActive(StackPane[][] stackPanes, List<Pawn> pawns) {
+    private void makeSurroundingFieldsActive() {
         if (wolfTurn) {
-            checkPawnsPosition(pawns);
+            boolean doesWolfLose = false;
+            checkPawnsPosition();
             Pawn pawn = Pawn.getWolf(pawns);
             int col = pawn.getColumn();
             int row = pawn.getRow();
             if (!(col == 0)) {
                 if (!(row == 0) && isPawnThere(col - 1, row - 1)) {
                     BoardField.lighten(col - 1, row - 1, stackPanes);
-                    movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 1);
+                    movePawnOnMouseClick(pawn, col, row, 1);
                     BoardField.darken(stackPanes, col - 1, row - 1);
-
+                    doesWolfLose = true;
                 }
                 if (!(row == (SIZE_OF_BOARD - 1)) && isPawnThere(col - 1, row + 1)) {
                     BoardField.lighten(col - 1, row + 1, stackPanes);
-                    movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 4);
+                    movePawnOnMouseClick(pawn, col, row, 4);
                     BoardField.darken(stackPanes, col - 1, row + 1);
+                    doesWolfLose = true;
                 }
             }
             if (!(col == (SIZE_OF_BOARD - 1))) {
                 if (!(row == 0) && isPawnThere(col + 1, row - 1)) {
                     BoardField.lighten(col + 1, row - 1, stackPanes);
-                    movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 2);
+                    movePawnOnMouseClick(pawn, col, row, 2);
                     BoardField.darken(stackPanes, col + 1, row - 1);
+                    doesWolfLose = true;
                 }
                 if (!(row == (SIZE_OF_BOARD - 1)) && isPawnThere(col + 1, row + 1)) {
                     BoardField.lighten(col + 1, row + 1, stackPanes);
-                    movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 3);
+                    movePawnOnMouseClick(pawn, col, row, 3);
                     BoardField.darken(stackPanes, col + 1, row + 1);
+                    doesWolfLose = true;
                 }
+            }
+            if (!doesWolfLose){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Owce Wygrywają !", ButtonType.OK); // Owce wygrywają !
+                alert.showAndWait();
             }
             wolfTurn = false;
         } else {
@@ -132,14 +142,14 @@ public class Main extends Application {
                     BoardField.lighten(pawn.getColumn(), pawn.getRow(), stackPanes);
                     BoardField.darken(stackPanes, pawn.getColumn(), pawn.getRow());
                     stackPanes[pawn.getColumn()][pawn.getRow()].setOnMouseClicked(mouseEvent -> {
-                        MakeFieldsActiveForSheep(stackPanes, pawn, pawns);
+                        MakeFieldsActiveForSheep(pawn);
                     });
                 }
             }
         }
     }
 
-    private static void MakeFieldsActiveForSheep(StackPane[][] stackPanes, Pawn pawn, List<Pawn> pawns) {
+    private void MakeFieldsActiveForSheep(Pawn pawn) {
         for (Pawn sheep : pawns) {
             if (sheep.isSheep()) {
                 stackPanes[sheep.getColumn()][sheep.getRow()].setOnMouseEntered(mouseEvent -> {
@@ -154,7 +164,7 @@ public class Main extends Application {
         if (!(col == 0)) {
             if (!(row == (SIZE_OF_BOARD - 1)) && isPawnThere(col - 1, row + 1)) {
                 BoardField.lighten(col - 1, row + 1, stackPanes);
-                movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 4);
+                movePawnOnMouseClick(pawn, col, row, 4);
                 BoardField.darken(stackPanes, col - 1, row + 1);
             }
         }
@@ -162,14 +172,14 @@ public class Main extends Application {
         if (!(col == (SIZE_OF_BOARD - 1))) {
             if (!(row == (SIZE_OF_BOARD - 1)) && isPawnThere(col + 1, row + 1)) {
                 BoardField.lighten(col + 1, row + 1, stackPanes);
-                movePawnOnMouseClick(stackPanes, pawn, pawns, col, row, 3);
+                movePawnOnMouseClick(pawn, col, row, 3);
                 BoardField.darken(stackPanes, col + 1, row + 1);
             }
         }
         wolfTurn = true;
     }
 
-    private static void removeSurroundingFieldsActive(StackPane[][] stackPanes, Pawn pawn, List<Pawn> pawns, int clicked) {
+    private void removeSurroundingFieldsActive(Pawn pawn, int clicked) {
         int col = pawn.getColumn();
         int row = pawn.getRow();
         if (!(col == 0)) {
@@ -210,58 +220,59 @@ public class Main extends Application {
             case 1 -> {
                 pawn.setColumn(col - 1);
                 pawn.setRow(row - 1);
-                makeSurroundingFieldsActive(stackPanes, pawns);
+                makeSurroundingFieldsActive();
             }
             case 2 -> {
                 pawn.setColumn(col + 1);
                 pawn.setRow(row - 1);
-                makeSurroundingFieldsActive(stackPanes, pawns);
+                makeSurroundingFieldsActive();
             }
             case 3 -> {
                 pawn.setColumn(col + 1);
                 pawn.setRow(row + 1);
-                makeSurroundingFieldsActive(stackPanes, pawns);
+                makeSurroundingFieldsActive();
             }
             case 4 -> {
                 pawn.setColumn(col - 1);
                 pawn.setRow(row + 1);
-                makeSurroundingFieldsActive(stackPanes, pawns);
+                makeSurroundingFieldsActive();
             }
         }
     }
 
-    private static void movePawnOnMouseClick(StackPane[][] stackPanes, Pawn pawn, List<Pawn> pawns, int col, int row, int clicked) {
+    private void movePawnOnMouseClick(Pawn pawn, int col, int row, int clicked) {
         switch (clicked) {
             case 1 -> stackPanes[col - 1][row - 1].setOnMouseClicked(mouseEvent -> {
                 stackPanes[col][row].getChildren().remove(pawn);
                 stackPanes[col - 1][row - 1].getChildren().add(pawn);
-                removeSurroundingFieldsActive(stackPanes, pawn, pawns, clicked);
+                removeSurroundingFieldsActive(pawn, clicked);
             });
             case 2 -> stackPanes[col + 1][row - 1].setOnMouseClicked(mouseEvent -> {
                 stackPanes[col][row].getChildren().remove(pawn);
                 stackPanes[col + 1][row - 1].getChildren().add(pawn);
-                removeSurroundingFieldsActive(stackPanes, pawn, pawns, clicked);
+                removeSurroundingFieldsActive(pawn, clicked);
             });
             case 3 -> stackPanes[col + 1][row + 1].setOnMouseClicked(mouseEvent -> {
                 stackPanes[col][row].getChildren().remove(pawn);
                 stackPanes[col + 1][row + 1].getChildren().add(pawn);
-                removeSurroundingFieldsActive(stackPanes, pawn, pawns, clicked);
+                removeSurroundingFieldsActive(pawn, clicked);
             });
             case 4 -> stackPanes[col - 1][row + 1].setOnMouseClicked(mouseEvent -> {
                 stackPanes[col][row].getChildren().remove(pawn);
                 stackPanes[col - 1][row + 1].getChildren().add(pawn);
-                removeSurroundingFieldsActive(stackPanes, pawn, pawns, clicked);
+                removeSurroundingFieldsActive(pawn, clicked);
             });
         }
     }
 
     private static void checkPawnsPosition(Pawn pawn) {
         if (pawn.getRow() == 0) {
-            System.out.println("Wilk wygrywa !");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Wilk wygrywa !", ButtonType.OK);
+            alert.showAndWait();
         }
     }
 
-    private static void checkPawnsPosition(List<Pawn> pawns) {
+    private void checkPawnsPosition() {
         for (Pawn pawn : pawns){
             if (pawn.isSheep() && pawn.getRow() == SIZE_OF_BOARD - 1){
                 grave.add(pawn);
@@ -269,7 +280,8 @@ public class Main extends Application {
         }
         pawns.removeAll(grave);
         if (pawns.size() == 1){
-            System.out.println("Wilkor WINS");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Wilk wygrywa !", ButtonType.OK);
+            alert.showAndWait();
         }
     }
 
