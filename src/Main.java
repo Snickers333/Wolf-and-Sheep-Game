@@ -2,6 +2,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Main extends Application {
     private static final int SIZE_OF_BOARD = 8;
@@ -133,12 +135,13 @@ public class Main extends Application {
             if (!doesWolfLose){
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Owce Wygrywają !", ButtonType.OK); // Owce wygrywają !
                 alert.showAndWait();
+                endGame();
             }
             wolfTurn = false;
         } else {
             checkPawnsPosition(Pawn.getWolf(pawns));
             for (Pawn pawn : pawns) {
-                if (pawn.isSheep()) {
+                if (pawn.isSheep() && ((isPawnThere(pawn.getColumn() - 1,pawn.getRow() + 1)) || isPawnThere(pawn.getColumn() + 1,pawn.getRow() + 1))) {
                     BoardField.lighten(pawn.getColumn(), pawn.getRow(), stackPanes);
                     BoardField.darken(stackPanes, pawn.getColumn(), pawn.getRow());
                     stackPanes[pawn.getColumn()][pawn.getRow()].setOnMouseClicked(mouseEvent -> {
@@ -265,10 +268,11 @@ public class Main extends Application {
         }
     }
 
-    private static void checkPawnsPosition(Pawn pawn) {
+    private void checkPawnsPosition(Pawn pawn) {
         if (pawn.getRow() == 0) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Wilk wygrywa !", ButtonType.OK);
             alert.showAndWait();
+            endGame();
         }
     }
 
@@ -282,10 +286,14 @@ public class Main extends Application {
         if (pawns.size() == 1){
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Wilk wygrywa !", ButtonType.OK);
             alert.showAndWait();
+            endGame();
         }
     }
 
     private static boolean isPawnThere (int col, int row) {
+        if (col >= SIZE_OF_BOARD || row >= SIZE_OF_BOARD) {
+            return false;
+        }
         for (Pawn pawn : pawns) {
             if (pawn.getColumn() == col && pawn.getRow() == row)
                 return false;
@@ -295,5 +303,12 @@ public class Main extends Application {
                 return false;
         }
         return true;
+    }
+
+    private void endGame() {
+        pawns = new ArrayList<>();
+        grave = new ArrayList<>();
+        stackPanes = new StackPane[SIZE_OF_BOARD][SIZE_OF_BOARD];
+        wolfTurn = true;
     }
 }
