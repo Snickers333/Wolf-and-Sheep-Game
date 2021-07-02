@@ -97,7 +97,7 @@ public class Main extends Application {
             boolean doesWolfLose = false;
             checkPawnsPosition();
             Pawn pawn = Pawn.getWolf(pawns);
-            if (pawns.size() == 1)
+            if (pawn == null)
                 return;
             int col = pawn.getColumn();
             int row = pawn.getRow();
