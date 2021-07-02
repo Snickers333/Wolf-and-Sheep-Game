@@ -2,7 +2,6 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -12,7 +11,6 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class Main extends Application {
     private static final int SIZE_OF_BOARD = 8;
@@ -29,9 +27,6 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         GridPane board = new GridPane();
         Scene scene = new Scene(board, 800, 800);
-        // TODO SET BOARD SIZE
-        // TODO COLLISION
-        // TODO SHOW WIN LOSE MESSAGES
         drawBoard(board);
         initializeWolf();
 
@@ -102,6 +97,8 @@ public class Main extends Application {
             boolean doesWolfLose = false;
             checkPawnsPosition();
             Pawn pawn = Pawn.getWolf(pawns);
+            if (pawns.size() == 1)
+                return;
             int col = pawn.getColumn();
             int row = pawn.getRow();
             if (!(col == 0)) {
@@ -291,7 +288,7 @@ public class Main extends Application {
     }
 
     private static boolean isPawnThere (int col, int row) {
-        if (col >= SIZE_OF_BOARD || row >= SIZE_OF_BOARD) {
+        if (col >= SIZE_OF_BOARD || row >= SIZE_OF_BOARD || col < 0) {
             return false;
         }
         for (Pawn pawn : pawns) {
